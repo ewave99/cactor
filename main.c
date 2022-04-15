@@ -5,15 +5,30 @@
 #include <string.h>
 
 enum TokenType {
+    T_UNKNOWN,
     T_INTEGER,
+    T_STRING,
+    T_BLOCK_START,
+    T_BLOCK_END,
     T_BUILTINS_DUP,
     T_BUILTINS_SWAP,
     T_BUILTINS_DROP,
+    T_BUILTINS_DROPPRINT,
+    T_BUILTINS_PRINTSTACK,
     T_BUILTINS_ADD,
     T_BUILTINS_SUBTRACT,
     T_BUILTINS_MULTIPLY,
     T_BUILTINS_DIVIDE,
-    T_UNKNOWN
+    T_BUILTINS_MOD,
+    T_BUILTINS_EQ,
+    T_BUILTINS_NE,
+    T_BUILTINS_GT,
+    T_BUILTINS_GE,
+    T_BUILTINS_LT,
+    T_BUILTINS_LE,
+    T_BUILTINS_IF,
+    T_BUILTINS_WHILE,
+    T_BUILTINS_DEFINE
 };
 
 struct Token {
@@ -80,28 +95,35 @@ int main(int argc, char ** argv)
             current_char = getc(fileptr);
 
         /* process token */
-        if (isInteger(buffer))
-            token_type = T_INTEGER;
-        else if (strcmp(buffer, "dup") == 0)
-            token_type = T_BUILTINS_DUP;
-        else if (strcmp(buffer, "swap") == 0)
-            token_type = T_BUILTINS_SWAP;
-        else if (strcmp(buffer, "drop") == 0)
-            token_type = T_BUILTINS_DROP;
-        else if (strcmp(buffer, "add") == 0)
-            token_type = T_BUILTINS_ADD;
-        else if (strcmp(buffer, "subtract") == 0)
-            token_type = T_BUILTINS_SUBTRACT;
-        else if (strcmp(buffer, "multiply") == 0)
-            token_type = T_BUILTINS_MULTIPLY;
-        else if (strcmp(buffer, "divide") == 0)
-            token_type = T_BUILTINS_DIVIDE;
-        else
-            token_type = T_UNKNOWN;
+        if (isInteger(buffer)) token_type = T_INTEGER;
+        else if (buffer[0] == '\'') token_type = T_STRING;
+        else if (strcmp(buffer, "{") == 0) token_type = T_BLOCK_START;
+        else if (strcmp(buffer, "}") == 0) token_type = T_BLOCK_END;
+        else if (strcmp(buffer, "dup") == 0) token_type = T_BUILTINS_DUP;
+        else if (strcmp(buffer, "swap") == 0) token_type = T_BUILTINS_SWAP;
+        else if (strcmp(buffer, "drop") == 0) token_type = T_BUILTINS_DROP;
+        else if (strcmp(buffer, ".") == 0) token_type = T_BUILTINS_DROPPRINT;
+        else if (strcmp(buffer, ".s") == 0) token_type = T_BUILTINS_PRINTSTACK;
+        else if (strcmp(buffer, "+") == 0) token_type = T_BUILTINS_ADD;
+        else if (strcmp(buffer, "-") == 0) token_type = T_BUILTINS_SUBTRACT;
+        else if (strcmp(buffer, "*") == 0) token_type = T_BUILTINS_MULTIPLY;
+        else if (strcmp(buffer, "/") == 0) token_type = T_BUILTINS_DIVIDE;
+        else if (strcmp(buffer, "%") == 0) token_type = T_BUILTINS_MOD;
+        else if (strcmp(buffer, "=") == 0) token_type = T_BUILTINS_EQ;
+        else if (strcmp(buffer, "!=") == 0) token_type = T_BUILTINS_NE;
+        else if (strcmp(buffer, ">") == 0) token_type = T_BUILTINS_GT;
+        else if (strcmp(buffer, ">=") == 0) token_type = T_BUILTINS_GE;
+        else if (strcmp(buffer, "<") == 0) token_type = T_BUILTINS_LT;
+        else if (strcmp(buffer, "<=") == 0) token_type = T_BUILTINS_LE;
+        else if (strcmp(buffer, "if") == 0) token_type = T_BUILTINS_IF;
+        else if (strcmp(buffer, "while") == 0) token_type = T_BUILTINS_WHILE;
+        else if (strcmp(buffer, "define") == 0) token_type = T_BUILTINS_DEFINE;
+        else token_type = T_UNKNOWN;
         initialiseToken(tokenptr, token_type, buffer);
         /*---*/
 
         token_count ++;
+
         tokenptr ++;
         
         if (token_count >= token_sequence_size)
@@ -122,6 +144,8 @@ int main(int argc, char ** argv)
     fclose(fileptr);
 
     printTokenSequence(token_sequence, token_count);
+    printf("%u\n", token_count);
+    printf("%lu\n", sizeof (struct Token));
 
     return 0;
 }
@@ -165,35 +189,5 @@ void printTokenSequence(struct Token * token_sequence, size_t length)
 
 void printToken(const struct Token * token)
 {
-    switch (token->type)
-    {
-        case T_INTEGER:
-            printf("T_INTEGER ");
-            break;
-        case T_BUILTINS_DUP:
-            printf("T_BUILTINS_DUP ");
-            break;
-        case T_BUILTINS_SWAP:
-            printf("T_BUILTINS_SWAP ");
-            break;
-        case T_BUILTINS_DROP:
-            printf("T_BUILTINS_DROP ");
-            break;
-        case T_BUILTINS_ADD:
-            printf("T_BUILTINS_ADD ");
-            break;
-        case T_BUILTINS_SUBTRACT:
-            printf("T_BUILTINS_SUBTRACT ");
-            break;
-        case T_BUILTINS_MULTIPLY:
-            printf("T_BUILTINS_MULTIPLY ");
-            break;
-        case T_BUILTINS_DIVIDE:
-            printf("T_BUILTINS_DIVIDE ");
-            break;
-        default:
-            printf("T_UNKNOWN ");
-            break;
-    }
-    printf("%s\n", token->raw);
+    printf("%d %s\n", token->type, token->raw);
 }
