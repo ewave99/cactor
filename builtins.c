@@ -24,11 +24,60 @@ struct Context
     struct StringStack * sstack;
 };
 
-int ipop(struct Context *);
-void ipush(struct Context *, int);
+void ipush(struct Context * context, int val)
+{
+    if (context->istack->length == context->istack->max_length)
+    {
+        printf("Int stack full, cannot push.\n");
+        return;
+    }
 
-void spush(struct Context *, const char *);
-char * spop(struct Context *);
+    context->istack->end ++;
+    context->istack->length ++;
+    * context->istack->end = val;
+}
+int ipop(struct Context * context)
+{
+    if (context->istack->length == 0)
+    {
+        printf("Int stack empty, cannot pop.\n");
+        return 0;
+    }
+
+    int val = * context->istack->end;
+    context->istack->end --;
+    context->istack->length --;
+
+    return val;
+}
+
+void spush(struct Context * context, const char * string)
+{
+    if (context->sstack->length == context->sstack->max_length)
+    {
+        printf("String stack full, cannot push.\n");
+        return;
+    }
+
+    context->sstack->end ++;
+    context->sstack->length ++;
+    * context->sstack->end = (char *) malloc(sizeof (char) * (strlen(string) + 1));
+    strcpy(* context->sstack->end, string);
+}
+char * spop(struct Context * context)
+{
+    if (context->sstack->length == 0)
+    {
+        printf("String stack empty, cannot pop.\n");
+        return NULL;
+    }
+
+    char * val = * context->sstack->end;
+    context->sstack->end --;
+    context->sstack->length --;
+
+    return val;
+}
 
 struct Context * init()
 {
