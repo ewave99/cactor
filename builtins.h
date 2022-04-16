@@ -19,6 +19,7 @@ struct Context
 };
 
 struct Context * init();
+void freeContext(struct Context *);
 void idup(struct Context *);
 void ipush(struct Context *, int);
 void imod(struct Context *);

@@ -63,5 +63,6 @@ int main()
 {
     struct Context * context = init();
     fizzbuzz(context);
+    freeContext(context);
     return 0;
 }
