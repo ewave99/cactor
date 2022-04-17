@@ -24,6 +24,20 @@ struct Context
     struct StringStack * sstack;
 };
 
+void printIntStack(struct Context * context)
+{
+    for (int i = 0; i < context->istack->length; i ++)
+        printf("%d ", context->istack->start[i]);
+    printf("<- TOP\n");
+}
+
+void printStringStack(struct Context * context)
+{
+    for (int i = 0; i < context->sstack->length; i ++)
+        printf("'%s' ", context->sstack->start[i]);
+    printf("<- TOP\n");
+}
+
 void ipush(struct Context * context, int val)
 {
     if (context->istack->length == context->istack->max_length)
@@ -32,9 +46,9 @@ void ipush(struct Context * context, int val)
         return;
     }
 
+    * context->istack->end = val;
     context->istack->end ++;
     context->istack->length ++;
-    * context->istack->end = val;
 }
 int ipop(struct Context * context)
 {
@@ -44,9 +58,11 @@ int ipop(struct Context * context)
         return 0;
     }
 
-    int val = * context->istack->end;
+    int val;
+
     context->istack->end --;
     context->istack->length --;
+    val = * context->istack->end;
 
     return val;
 }
@@ -59,10 +75,10 @@ void spush(struct Context * context, const char * string)
         return;
     }
 
-    context->sstack->end ++;
-    context->sstack->length ++;
     * context->sstack->end = (char *) malloc(sizeof (char) * (strlen(string) + 1));
     strcpy(* context->sstack->end, string);
+    context->sstack->end ++;
+    context->sstack->length ++;
 }
 char * spop(struct Context * context)
 {
@@ -71,10 +87,11 @@ char * spop(struct Context * context)
         printf("String stack empty, cannot pop.\n");
         return NULL;
     }
+    char * val;
 
-    char * val = * context->sstack->end;
     context->sstack->end --;
     context->sstack->length --;
+    val = * context->sstack->end;
 
     return val;
 }
@@ -122,13 +139,6 @@ void imod(struct Context * context)
     
     ipush(context, a % b);
 }
-void ieq(struct Context * context)
-{
-    int b = ipop(context);
-    int a = ipop(context);
-
-    ipush(context, (a == b) ? 1 : 0);
-}
 void iswap(struct Context * context)
 {
     int b = ipop(context);
@@ -136,6 +146,10 @@ void iswap(struct Context * context)
 
     ipush(context, b);
     ipush(context, a);
+}
+void idrop(struct Context * context)
+{
+    ipop(context);
 }
 void concat(struct Context * context)
 {
@@ -166,12 +180,47 @@ void itos(struct Context * context)
     sprintf(buffer, "%d", ival);
     spush(context, buffer);
 }
+void ieq(struct Context * context)
+{
+    int b = ipop(context);
+    int a = ipop(context);
+
+    ipush(context, (a == b) ? 1 : 0);
+}
+void ine(struct Context * context)
+{
+    int b = ipop(context);
+    int a = ipop(context);
+
+    ipush(context, (a != b) ? 1 : 0);
+}
+void igt(struct Context * context)
+{
+    int b = ipop(context);
+    int a = ipop(context);
+
+    ipush(context, (a > b) ? 1 : 0);
+}
+void ige(struct Context * context)
+{
+    int b = ipop(context);
+    int a = ipop(context);
+
+    ipush(context, (a >= b) ? 1 : 0);
+}
 void ilt(struct Context * context)
 {
     int b = ipop(context);
     int a = ipop(context);
 
     ipush(context, (a < b) ? 1 : 0);
+}
+void ile(struct Context * context)
+{
+    int b = ipop(context);
+    int a = ipop(context);
+
+    ipush(context, (a <= b) ? 1 : 0);
 }
 void soutput(struct Context * context)
 {
@@ -185,4 +234,35 @@ void iadd(struct Context * context)
     int a = ipop(context);
     
     ipush(context, a + b);
+}
+void isubtract(struct Context * context)
+{
+    int b = ipop(context);
+    int a = ipop(context);
+    
+    ipush(context, a - b);
+}
+void imultiply(struct Context * context)
+{
+    int b = ipop(context);
+    int a = ipop(context);
+    
+    ipush(context, a * b);
+}
+void idivide(struct Context * context)
+{
+    int b = ipop(context);
+    int a = ipop(context);
+
+    if (b == 0)
+    {
+        printf("Can't divide by zero.");
+        return;
+    }
+    
+    ipush(context, a / b);
+}
+void ioutput(struct Context * context)
+{
+    printf("%d", ipop(context));
 }
