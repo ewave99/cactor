@@ -30,6 +30,7 @@ void iswap(struct Context *);
 void idrop(struct Context *);
 
 void itos(struct Context *);
+void itoc(struct Context *);
 void ioutput(struct Context *);
 
 void iadd(struct Context *);

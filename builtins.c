@@ -266,3 +266,9 @@ void ioutput(struct Context * context)
 {
     printf("%d", ipop(context));
 }
+void itoc(struct Context * context)
+{
+    int val = ipop(context);
+    char buffer[] = { (char) val, 0 };
+    spush(context, buffer);
+}

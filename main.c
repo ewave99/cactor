@@ -29,6 +29,8 @@ enum TokenType {
     T_BUILTINS_INT_GE,
     T_BUILTINS_INT_LT,
     T_BUILTINS_INT_LE,
+    T_BUILTINS_ITOS,
+    T_BUILTINS_ITOC,
 
     T_BUILTINS_STRING_DUP,
     T_BUILTINS_STRING_SWAP,
@@ -122,6 +124,7 @@ int main(int argc, char ** argv)
             else if (strcmp(buffer + 1, ".s") == 0)     token_type = T_BUILTINS_STRING_PRINTSTACK;
             else token_type = T_UNKNOWN;
         }
+        else if (strcmp(buffer, "concat") == 0)    token_type = T_BUILTINS_STRING_CONCAT;
 
         else if (strcmp(buffer, "dup") == 0)    token_type = T_BUILTINS_INT_DUP;
         else if (strcmp(buffer, "drop") == 0)   token_type = T_BUILTINS_INT_DROP;
@@ -139,6 +142,8 @@ int main(int argc, char ** argv)
         else if (strcmp(buffer, ">=") == 0)     token_type = T_BUILTINS_INT_GE;
         else if (strcmp(buffer, "<") == 0)      token_type = T_BUILTINS_INT_LT;
         else if (strcmp(buffer, "<=") == 0)     token_type = T_BUILTINS_INT_LE;
+        else if (strcmp(buffer, "itos") == 0)   token_type = T_BUILTINS_ITOS;
+        else if (strcmp(buffer, "itoc") == 0)   token_type = T_BUILTINS_ITOC;
 
         else if (strcmp(buffer, "if") == 0)     token_type = T_BUILTINS_IF;
         else if (strcmp(buffer, "else") == 0) token_type = T_BUILTINS_ELSE;
@@ -193,6 +198,13 @@ int main(int argc, char ** argv)
                 free(string);
                 break;
 
+            case T_BUILTINS_ITOS:
+                itos(context);
+                break;
+            case T_BUILTINS_ITOC:
+                itoc(context);
+                break;
+
             case T_BUILTINS_IF:
                 if (!ipop(context))
                 {
@@ -235,6 +247,12 @@ int main(int argc, char ** argv)
 
             case T_BUILTINS_STRING_DROPPRINT:
                 soutput(context);
+                break;
+            case T_BUILTINS_STRING_CONCAT:
+                concat(context);
+                break;
+            case T_BUILTINS_STRING_PRINTSTACK:
+                printStringStack(context);
                 break;
 
             case T_BUILTINS_INT_DUP:

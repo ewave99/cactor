@@ -1,1 +1,1 @@
-0 dup 10 < while dup dup dup * + 2 / . '\n s. 1 + dup 10 < endwhile drop
+100 itoc 90 itoc 85 itoc concat concat 10 itoc concat s.
