@@ -11,9 +11,6 @@ enum TokenType {
     T_INTEGER,
     T_STRING,
 
-    T_BLOCK_START,
-    T_BLOCK_END,
-
     T_BUILTINS_DEFINE,
 
     T_BUILTINS_INT_DUP,
@@ -32,9 +29,6 @@ enum TokenType {
     T_BUILTINS_INT_GE,
     T_BUILTINS_INT_LT,
     T_BUILTINS_INT_LE,
-    T_BUILTINS_INT_IF,
-    T_BUILTINS_INT_IFELSE,
-    T_BUILTINS_INT_WHILE,
 
     T_BUILTINS_STRING_DUP,
     T_BUILTINS_STRING_SWAP,
@@ -42,9 +36,12 @@ enum TokenType {
     T_BUILTINS_STRING_DROPPRINT,
     T_BUILTINS_STRING_PRINTSTACK,
     T_BUILTINS_STRING_CONCAT,
-    T_BUILTINS_STRING_IF,
-    T_BUILTINS_STRING_IFELSE,
-    T_BUILTINS_STRING_WHILE,
+
+    T_BUILTINS_IF,
+    T_BUILTINS_ELSE,
+    T_BUILTINS_ENDIF,
+    T_BUILTINS_WHILE,
+    T_BUILTINS_ENDWHILE,
 };
 
 struct Token {
@@ -57,6 +54,7 @@ int isInteger(const char * buffer);
 int toInteger(char * buffer);
 void printTokenSequence(struct Token * token_sequence, size_t length);
 void printToken(const struct Token * token);
+char * processRawString(char * raw);
 
 int main(int argc, char ** argv)
 {
@@ -115,30 +113,6 @@ int main(int argc, char ** argv)
         if (isInteger(buffer)) token_type = T_INTEGER;
         else if (buffer[0] == '\'') token_type = T_STRING;
 
-        else if (buffer[0] == 'i')
-        {
-            if      (strcmp(buffer + 1, "dup") == 0)    token_type = T_BUILTINS_INT_DUP;
-            else if (strcmp(buffer + 1, "drop") == 0)   token_type = T_BUILTINS_INT_DROP;
-            else if (strcmp(buffer + 1, "swap") == 0)   token_type = T_BUILTINS_INT_SWAP;
-            else if (strcmp(buffer + 1, ".") == 0)      token_type = T_BUILTINS_INT_DROPPRINT;
-            else if (strcmp(buffer + 1, ".s") == 0)     token_type = T_BUILTINS_INT_PRINTSTACK;
-            else if (strcmp(buffer + 1, "+") == 0)      token_type = T_BUILTINS_INT_ADD;
-            else if (strcmp(buffer + 1, "-") == 0)      token_type = T_BUILTINS_INT_SUBTRACT;
-            else if (strcmp(buffer + 1, "*") == 0)      token_type = T_BUILTINS_INT_MULTIPLY;
-            else if (strcmp(buffer + 1, "/") == 0)      token_type = T_BUILTINS_INT_DIVIDE;
-            else if (strcmp(buffer + 1, "%") == 0)      token_type = T_BUILTINS_INT_MOD;
-            else if (strcmp(buffer + 1, "=") == 0)      token_type = T_BUILTINS_INT_EQ;
-            else if (strcmp(buffer + 1, "!=") == 0)     token_type = T_BUILTINS_INT_NE;
-            else if (strcmp(buffer + 1, ">") == 0)      token_type = T_BUILTINS_INT_GT;
-            else if (strcmp(buffer + 1, ">=") == 0)     token_type = T_BUILTINS_INT_GE;
-            else if (strcmp(buffer + 1, "<") == 0)      token_type = T_BUILTINS_INT_LT;
-            else if (strcmp(buffer + 1, "<=") == 0)     token_type = T_BUILTINS_INT_LE;
-            else if (strcmp(buffer + 1, "if") == 0)     token_type = T_BUILTINS_INT_IF;
-            else if (strcmp(buffer + 1, "ifelse") == 0) token_type = T_BUILTINS_INT_IFELSE;
-            else if (strcmp(buffer + 1, "while") == 0)  token_type = T_BUILTINS_INT_WHILE;
-            else token_type = T_UNKNOWN;
-        }
-
         else if (buffer[0] == 's')
         {
             if      (strcmp(buffer + 1, "dup") == 0)    token_type = T_BUILTINS_STRING_DUP;
@@ -146,13 +120,32 @@ int main(int argc, char ** argv)
             else if (strcmp(buffer + 1, "drop") == 0)   token_type = T_BUILTINS_STRING_DROP;
             else if (strcmp(buffer + 1, ".") == 0)      token_type = T_BUILTINS_STRING_DROPPRINT;
             else if (strcmp(buffer + 1, ".s") == 0)     token_type = T_BUILTINS_STRING_PRINTSTACK;
-            else if (strcmp(buffer + 1, "ifelse") == 0) token_type = T_BUILTINS_STRING_IFELSE;
-            else if (strcmp(buffer + 1, "while") == 0)  token_type = T_BUILTINS_STRING_WHILE;
             else token_type = T_UNKNOWN;
         }
 
-        else if (strcmp(buffer, "{") == 0) token_type = T_BLOCK_START;
-        else if (strcmp(buffer, "}") == 0) token_type = T_BLOCK_END;
+        else if (strcmp(buffer, "dup") == 0)    token_type = T_BUILTINS_INT_DUP;
+        else if (strcmp(buffer, "drop") == 0)   token_type = T_BUILTINS_INT_DROP;
+        else if (strcmp(buffer, "swap") == 0)   token_type = T_BUILTINS_INT_SWAP;
+        else if (strcmp(buffer, ".") == 0)      token_type = T_BUILTINS_INT_DROPPRINT;
+        else if (strcmp(buffer, ".s") == 0)     token_type = T_BUILTINS_INT_PRINTSTACK;
+        else if (strcmp(buffer, "+") == 0)      token_type = T_BUILTINS_INT_ADD;
+        else if (strcmp(buffer, "-") == 0)      token_type = T_BUILTINS_INT_SUBTRACT;
+        else if (strcmp(buffer, "*") == 0)      token_type = T_BUILTINS_INT_MULTIPLY;
+        else if (strcmp(buffer, "/") == 0)      token_type = T_BUILTINS_INT_DIVIDE;
+        else if (strcmp(buffer, "%") == 0)      token_type = T_BUILTINS_INT_MOD;
+        else if (strcmp(buffer, "=") == 0)      token_type = T_BUILTINS_INT_EQ;
+        else if (strcmp(buffer, "!=") == 0)     token_type = T_BUILTINS_INT_NE;
+        else if (strcmp(buffer, ">") == 0)      token_type = T_BUILTINS_INT_GT;
+        else if (strcmp(buffer, ">=") == 0)     token_type = T_BUILTINS_INT_GE;
+        else if (strcmp(buffer, "<") == 0)      token_type = T_BUILTINS_INT_LT;
+        else if (strcmp(buffer, "<=") == 0)     token_type = T_BUILTINS_INT_LE;
+
+        else if (strcmp(buffer, "if") == 0)     token_type = T_BUILTINS_IF;
+        else if (strcmp(buffer, "else") == 0) token_type = T_BUILTINS_ELSE;
+        else if (strcmp(buffer, "endif") == 0) token_type = T_BUILTINS_ENDIF;
+        else if (strcmp(buffer, "while") == 0)  token_type = T_BUILTINS_WHILE;
+        else if (strcmp(buffer, "endwhile") == 0)  token_type = T_BUILTINS_ENDWHILE;
+
         else if (strcmp(buffer, "define") == 0) token_type = T_BUILTINS_DEFINE;
 
         else token_type = T_UNKNOWN;
@@ -183,14 +176,65 @@ int main(int argc, char ** argv)
 
     struct Context * context = init();
 
+    char * string;
+
     tokenptr = token_sequence;
     index = 0;
-    while (index < token_count)
+    while (index >= 0 && index < token_count)
     {
         switch (tokenptr->type)
         {
             case T_INTEGER:
                 ipush(context, toInteger(tokenptr->raw));
+                break;
+            case T_STRING:
+                string = processRawString(tokenptr->raw);
+                spush(context, string);
+                free(string);
+                break;
+
+            case T_BUILTINS_IF:
+                if (!ipop(context))
+                {
+                    while (tokenptr->type != T_BUILTINS_ELSE && tokenptr->type != T_BUILTINS_ENDIF && index < token_count)
+                    {
+                        tokenptr ++;
+                        index ++;
+                    }
+                }
+                break;
+            case T_BUILTINS_ELSE:
+                while (tokenptr->type != T_BUILTINS_ENDIF && index < token_count)
+                {
+                    tokenptr ++;
+                    index ++;
+                }
+                break;
+            case T_BUILTINS_ENDIF:
+                break;
+            case T_BUILTINS_WHILE:
+                if (!ipop(context))
+                {
+                    while (tokenptr->type != T_BUILTINS_ENDWHILE && index < token_count)
+                    {
+                        tokenptr ++;
+                        index ++;
+                    }
+                }
+                break;
+            case T_BUILTINS_ENDWHILE:
+                if (ipop(context))
+                {
+                    while (tokenptr->type != T_BUILTINS_WHILE && index >= 0)
+                    {
+                        tokenptr --;
+                        index --;
+                    }
+                }
+                break;
+
+            case T_BUILTINS_STRING_DROPPRINT:
+                soutput(context);
                 break;
 
             case T_BUILTINS_INT_DUP:
@@ -339,4 +383,48 @@ void printToken(const struct Token * token)
         printf(" %s", token->raw);
     }
     printf("\n");
+}
+
+char * processRawString(char * raw)
+{
+    unsigned int rawlength = strlen(raw);
+    char * result = (char *) malloc(sizeof (char) * (rawlength + 1));
+
+    unsigned int rawindex = 1; //ignore the ' at the start
+    unsigned int resultindex = 0;
+
+    while (rawindex < rawlength)
+    {
+        if (raw[rawindex] == '_')
+        {
+            result[resultindex] = ' ';
+            resultindex ++;
+        }
+        else if (raw[rawindex] == '\\') /* '\' */
+        {
+            if (rawindex < rawlength - 1)
+            {
+                if (raw[rawindex + 1] == 'n')
+                {
+                    result[resultindex] = '\n';
+                }
+                else
+                {
+                    result[resultindex] = raw[rawindex + 1];
+                }
+                rawindex ++;
+                resultindex ++;
+            }
+        }
+        else
+        {
+            result[resultindex] = raw[rawindex];
+            resultindex ++;
+        }
+        rawindex ++;
+    }
+
+    result[resultindex] = 0;
+
+    return result;
 }

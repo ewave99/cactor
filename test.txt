@@ -1,1 +1,1 @@
-1 1 i+ 1 i+ i.
+0 dup 10 < while dup dup dup * + 2 / . '\n s. 1 + dup 10 < endwhile drop
