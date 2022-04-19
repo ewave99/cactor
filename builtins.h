@@ -49,7 +49,11 @@ void printStringStack(struct Context *);
 const char * spop(struct Context *);
 void spush(struct Context *, const char *);
 
+void sswap(struct Context *);
 void sdup(struct Context *);
 void sdrop(struct Context *);
 void soutput(struct Context *);
 void concat(struct Context *);
+void headtail(struct Context *);
+void ctoi(struct Context *);
+void len(struct Context *);

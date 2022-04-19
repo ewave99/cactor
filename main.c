@@ -29,6 +29,7 @@ enum TokenType {
     T_BUILTINS_INT_GE,
     T_BUILTINS_INT_LT,
     T_BUILTINS_INT_LE,
+
     T_BUILTINS_ITOS,
     T_BUILTINS_ITOC,
 
@@ -38,6 +39,10 @@ enum TokenType {
     T_BUILTINS_STRING_DROPPRINT,
     T_BUILTINS_STRING_PRINTSTACK,
     T_BUILTINS_STRING_CONCAT,
+
+    T_BUILTINS_STRING_HEADTAIL,
+    T_BUILTINS_STRING_LEN,
+    T_BUILTINS_CTOI,
 
     T_BUILTINS_IF,
     T_BUILTINS_ELSE,
@@ -124,32 +129,36 @@ int main(int argc, char ** argv)
             else if (strcmp(buffer + 1, ".s") == 0)     token_type = T_BUILTINS_STRING_PRINTSTACK;
             else token_type = T_UNKNOWN;
         }
-        else if (strcmp(buffer, "concat") == 0)    token_type = T_BUILTINS_STRING_CONCAT;
+        else if (strcmp(buffer, "concat") == 0) token_type = T_BUILTINS_STRING_CONCAT;
+        else if (strcmp(buffer, "len") == 0)    token_type = T_BUILTINS_STRING_LEN;
 
-        else if (strcmp(buffer, "dup") == 0)    token_type = T_BUILTINS_INT_DUP;
-        else if (strcmp(buffer, "drop") == 0)   token_type = T_BUILTINS_INT_DROP;
-        else if (strcmp(buffer, "swap") == 0)   token_type = T_BUILTINS_INT_SWAP;
-        else if (strcmp(buffer, ".") == 0)      token_type = T_BUILTINS_INT_DROPPRINT;
-        else if (strcmp(buffer, ".s") == 0)     token_type = T_BUILTINS_INT_PRINTSTACK;
-        else if (strcmp(buffer, "+") == 0)      token_type = T_BUILTINS_INT_ADD;
-        else if (strcmp(buffer, "-") == 0)      token_type = T_BUILTINS_INT_SUBTRACT;
-        else if (strcmp(buffer, "*") == 0)      token_type = T_BUILTINS_INT_MULTIPLY;
-        else if (strcmp(buffer, "/") == 0)      token_type = T_BUILTINS_INT_DIVIDE;
-        else if (strcmp(buffer, "%") == 0)      token_type = T_BUILTINS_INT_MOD;
-        else if (strcmp(buffer, "=") == 0)      token_type = T_BUILTINS_INT_EQ;
-        else if (strcmp(buffer, "!=") == 0)     token_type = T_BUILTINS_INT_NE;
-        else if (strcmp(buffer, ">") == 0)      token_type = T_BUILTINS_INT_GT;
-        else if (strcmp(buffer, ">=") == 0)     token_type = T_BUILTINS_INT_GE;
-        else if (strcmp(buffer, "<") == 0)      token_type = T_BUILTINS_INT_LT;
-        else if (strcmp(buffer, "<=") == 0)     token_type = T_BUILTINS_INT_LE;
-        else if (strcmp(buffer, "itos") == 0)   token_type = T_BUILTINS_ITOS;
-        else if (strcmp(buffer, "itoc") == 0)   token_type = T_BUILTINS_ITOC;
+        else if (strcmp(buffer, "dup") == 0)  token_type = T_BUILTINS_INT_DUP;
+        else if (strcmp(buffer, "drop") == 0) token_type = T_BUILTINS_INT_DROP;
+        else if (strcmp(buffer, "swap") == 0) token_type = T_BUILTINS_INT_SWAP;
+        else if (strcmp(buffer, ".") == 0)    token_type = T_BUILTINS_INT_DROPPRINT;
+        else if (strcmp(buffer, ".s") == 0)   token_type = T_BUILTINS_INT_PRINTSTACK;
+        else if (strcmp(buffer, "+") == 0)    token_type = T_BUILTINS_INT_ADD;
+        else if (strcmp(buffer, "-") == 0)    token_type = T_BUILTINS_INT_SUBTRACT;
+        else if (strcmp(buffer, "*") == 0)    token_type = T_BUILTINS_INT_MULTIPLY;
+        else if (strcmp(buffer, "/") == 0)    token_type = T_BUILTINS_INT_DIVIDE;
+        else if (strcmp(buffer, "%") == 0)    token_type = T_BUILTINS_INT_MOD;
+        else if (strcmp(buffer, "=") == 0)    token_type = T_BUILTINS_INT_EQ;
+        else if (strcmp(buffer, "!=") == 0)   token_type = T_BUILTINS_INT_NE;
+        else if (strcmp(buffer, ">") == 0)    token_type = T_BUILTINS_INT_GT;
+        else if (strcmp(buffer, ">=") == 0)   token_type = T_BUILTINS_INT_GE;
+        else if (strcmp(buffer, "<") == 0)    token_type = T_BUILTINS_INT_LT;
+        else if (strcmp(buffer, "<=") == 0)   token_type = T_BUILTINS_INT_LE;
+        else if (strcmp(buffer, "itos") == 0) token_type = T_BUILTINS_ITOS;
+        else if (strcmp(buffer, "itoc") == 0) token_type = T_BUILTINS_ITOC;
 
-        else if (strcmp(buffer, "if") == 0)     token_type = T_BUILTINS_IF;
-        else if (strcmp(buffer, "else") == 0) token_type = T_BUILTINS_ELSE;
-        else if (strcmp(buffer, "endif") == 0) token_type = T_BUILTINS_ENDIF;
-        else if (strcmp(buffer, "while") == 0)  token_type = T_BUILTINS_WHILE;
-        else if (strcmp(buffer, "endwhile") == 0)  token_type = T_BUILTINS_ENDWHILE;
+        else if (strcmp(buffer, "ctoi") == 0) token_type = T_BUILTINS_CTOI;
+        else if (strcmp(buffer, "headtail") == 0) token_type = T_BUILTINS_STRING_HEADTAIL;
+
+        else if (strcmp(buffer, "if") == 0)       token_type = T_BUILTINS_IF;
+        else if (strcmp(buffer, "else") == 0)     token_type = T_BUILTINS_ELSE;
+        else if (strcmp(buffer, "endif") == 0)    token_type = T_BUILTINS_ENDIF;
+        else if (strcmp(buffer, "while") == 0)    token_type = T_BUILTINS_WHILE;
+        else if (strcmp(buffer, "endwhile") == 0) token_type = T_BUILTINS_ENDWHILE;
 
         else if (strcmp(buffer, "define") == 0) token_type = T_BUILTINS_DEFINE;
 
@@ -245,11 +254,26 @@ int main(int argc, char ** argv)
                 }
                 break;
 
+            case T_BUILTINS_CTOI:
+                ctoi(context);
+                break;
+            case T_BUILTINS_STRING_HEADTAIL:
+                headtail(context);
+                break;
             case T_BUILTINS_STRING_DROPPRINT:
                 soutput(context);
                 break;
+            case T_BUILTINS_STRING_SWAP:
+                sswap(context);
+                break;
+            case T_BUILTINS_STRING_DUP:
+                sdup(context);
+                break;
             case T_BUILTINS_STRING_CONCAT:
                 concat(context);
+                break;
+            case T_BUILTINS_STRING_LEN:
+                len(context);
                 break;
             case T_BUILTINS_STRING_PRINTSTACK:
                 printStringStack(context);

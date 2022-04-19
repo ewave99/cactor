@@ -1,1 +1,8 @@
-100 itoc 90 itoc 85 itoc concat concat 10 itoc concat s.
+0 'all_human_beings_are_born_free_and_equal_in_dignity_and_rights
+sdup s. ':_ s.
+sdup len while
+    headtail
+    sswap ctoi
+    +
+sdup len endwhile
+.

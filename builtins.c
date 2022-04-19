@@ -34,7 +34,7 @@ void printIntStack(struct Context * context)
 void printStringStack(struct Context * context)
 {
     for (int i = 0; i < context->sstack->length; i ++)
-        printf("'%s' ", context->sstack->start[i]);
+        printf("'%s ", context->sstack->start[i]);
     printf("<- TOP\n");
 }
 
@@ -271,4 +271,47 @@ void itoc(struct Context * context)
     int val = ipop(context);
     char buffer[] = { (char) val, 0 };
     spush(context, buffer);
+}
+
+void ctoi(struct Context * context)
+{
+    char * string = spop(context);
+    if (string == NULL) return;
+    ipush(context, (int) string[0]);
+    free(string);
+}
+void headtail(struct Context * context)
+{
+    char * string = spop(context);
+    if (string == NULL) return;
+    unsigned int length = strlen(string);
+    if (length == 0) 
+    {
+        spush(context, string);
+        spush(context, string);
+        return;
+    }
+    char head[] = { (char) string[0], 0 };
+    char tail[length];
+    for (int i = 0; i < length - 1; i ++)
+        tail[i] = string[i + 1];
+    tail[length - 1] = 0;
+    spush(context, head);
+    spush(context, tail);
+    free(string);
+}
+void sswap(struct Context * context)
+{
+    char * b = spop(context);
+    char * a = spop(context);
+    spush(context, b);
+    spush(context, a);
+    free(a);
+    free(b);
+}
+void len(struct Context * context)
+{
+    char * string = spop(context);
+    ipush(context, strlen(string));
+    free(string);
 }
